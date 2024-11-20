@@ -1,187 +1,200 @@
-= Spring Data JPA image:https://jenkins.spring.io/buildStatus/icon?job=spring-data-jpa%2Fmain&subject=Build[link=https://jenkins.spring.io/view/SpringData/job/spring-data-jpa/] https://gitter.im/spring-projects/spring-data[image:https://badges.gitter.im/spring-projects/spring-data.svg[Gitter]] image:https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A["Revved up by Develocity", link="https://ge.spring.io/scans?search.rootProjectNames=Spring Data JPA Parent"]
+Here is the formatted README file for a GitHub project:
 
-Spring Data JPA, part of the larger https://projects.spring.io/spring-data[Spring Data] family, makes it easy to implement JPA-based repositories.
-This module deals with enhanced support for JPA-based data access layers.
-It makes it easier to build Spring-powered applications that use data access technologies.
+---
 
-Implementing a data access layer of an application has been cumbersome for quite a while.
-Too much boilerplate code has to be written to execute simple queries as well as perform pagination, and auditing.
-Spring Data JPA aims to significantly improve the implementation of data access layers by reducing the effort to the amount that’s actually needed.
-As a developer you write your repository interfaces, including custom finder methods, and Spring will provide the implementation automatically.
+# Spring Data JPA
 
-== Features
+[Spring Data JPA](https://projects.spring.io/spring-data), part of the larger [Spring Data](https://projects.spring.io/spring-data) family, makes it easy to implement JPA-based repositories. This module provides enhanced support for JPA-based data access layers, making it simpler to build Spring-powered applications that use data access technologies.
 
-* Implementation of CRUD methods for JPA Entities
-* Dynamic query generation from query method names
-* Transparent triggering of JPA NamedQueries by query methods
-* Implementation domain base classes providing basic properties
-* Support for transparent auditing (created, last changed)
-* Possibility to integrate custom repository code
-* Easy Spring integration with custom namespace
+---
 
-== Code of Conduct
+## Overview
 
-This project is governed by the https://github.com/spring-projects/.github/blob/e3cc2ff230d8f1dca06535aa6b5a4a23815861d4/CODE_OF_CONDUCT.md[Spring Code of Conduct]. By participating, you are expected to uphold this code of conduct. Please report unacceptable behavior to spring-code-of-conduct@pivotal.io.
+Implementing a data access layer for an application can be cumbersome due to boilerplate code for executing queries, pagination, and auditing. Spring Data JPA minimizes this effort, allowing developers to focus on defining repository interfaces with custom finder methods. Spring provides the implementations automatically.
 
-== Getting Started
+---
 
-Here is a quick teaser of an application using Spring Data Repositories in Java:
+## Features
 
-[source,java]
-----
+- Implementation of CRUD methods for JPA entities
+- Dynamic query generation from query method names
+- Transparent triggering of JPA NamedQueries by query methods
+- Domain base classes providing basic properties
+- Transparent auditing (e.g., creation and last modification timestamps)
+- Custom repository code integration
+- Seamless Spring integration with a custom namespace
+
+---
+
+## Code of Conduct
+
+This project adheres to the [Spring Code of Conduct](https://github.com/spring-projects/.github/blob/e3cc2ff230d8f1dca06535aa6b5a4a23815861d4/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Report unacceptable behavior to [spring-code-of-conduct@pivotal.io](mailto:spring-code-of-conduct@pivotal.io).
+
+---
+
+## Getting Started
+
+Here's a quick example using Spring Data JPA repositories:
+
+### Example Code
+
+```java
 public interface PersonRepository extends CrudRepository<Person, Long> {
-
-  List<Person> findByLastname(String lastname);
-
-  List<Person> findByFirstnameLike(String firstname);
+    List<Person> findByLastname(String lastname);
+    List<Person> findByFirstnameLike(String firstname);
 }
 
 @Service
 public class MyService {
 
-  private final PersonRepository repository;
+    private final PersonRepository repository;
 
-  public MyService(PersonRepository repository) {
-    this.repository = repository;
-  }
+    public MyService(PersonRepository repository) {
+        this.repository = repository;
+    }
 
-  public void doWork() {
+    public void doWork() {
+        repository.deleteAll();
 
-    repository.deleteAll();
+        Person person = new Person();
+        person.setFirstname("Oliver");
+        person.setLastname("Gierke");
+        repository.save(person);
 
-    Person person = new Person();
-    person.setFirstname("Oliver");
-    person.setLastname("Gierke");
-    repository.save(person);
-
-    List<Person> lastNameResults = repository.findByLastname("Gierke");
-    List<Person> firstNameResults = repository.findByFirstnameLike("Oli%");
- }
+        List<Person> lastNameResults = repository.findByLastname("Gierke");
+        List<Person> firstNameResults = repository.findByFirstnameLike("Oli%");
+    }
 }
 
 @Configuration
 @EnableJpaRepositories("com.acme.repositories")
 class AppConfig {
 
-  @Bean
-  public DataSource dataSource() {
-    return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
-  }
+    @Bean
+    public DataSource dataSource() {
+        return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
+    }
 
-  @Bean
-  public JpaTransactionManager transactionManager(EntityManagerFactory emf) {
-    return new JpaTransactionManager(emf);
-  }
+    @Bean
+    public JpaTransactionManager transactionManager(EntityManagerFactory emf) {
+        return new JpaTransactionManager(emf);
+    }
 
-  @Bean
-  public JpaVendorAdapter jpaVendorAdapter() {
-    HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
-    jpaVendorAdapter.setDatabase(Database.H2);
-    jpaVendorAdapter.setGenerateDdl(true);
-    return jpaVendorAdapter;
-  }
+    @Bean
+    public JpaVendorAdapter jpaVendorAdapter() {
+        HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
+        jpaVendorAdapter.setDatabase(Database.H2);
+        jpaVendorAdapter.setGenerateDdl(true);
+        return jpaVendorAdapter;
+    }
 
-  @Bean
-  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-    LocalContainerEntityManagerFactoryBean lemfb = new LocalContainerEntityManagerFactoryBean();
-    lemfb.setDataSource(dataSource());
-    lemfb.setJpaVendorAdapter(jpaVendorAdapter());
-    lemfb.setPackagesToScan("com.acme");
-    return lemfb;
-  }
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        LocalContainerEntityManagerFactoryBean lemfb = new LocalContainerEntityManagerFactoryBean();
+        lemfb.setDataSource(dataSource());
+        lemfb.setJpaVendorAdapter(jpaVendorAdapter());
+        lemfb.setPackagesToScan("com.acme");
+        return lemfb;
+    }
 }
-----
+```
 
-=== Maven configuration
+### Maven Configuration
 
-Add the Maven dependency:
+Add the following dependency to your `pom.xml`:
 
-[source,xml]
-----
+```xml
 <dependency>
-  <groupId>org.springframework.data</groupId>
-  <artifactId>spring-data-jpa</artifactId>
-  <version>${version}</version>
+    <groupId>org.springframework.data</groupId>
+    <artifactId>spring-data-jpa</artifactId>
+    <version>${version}</version>
 </dependency>
-----
+```
 
-If you'd rather like the latest snapshots of the upcoming major version, use our Maven snapshot repository and declare the appropriate dependency version.
+For the latest snapshots:
 
-[source,xml]
-----
+```xml
 <dependency>
-  <groupId>org.springframework.data</groupId>
-  <artifactId>spring-data-jpa</artifactId>
-  <version>${version}-SNAPSHOT</version>
+    <groupId>org.springframework.data</groupId>
+    <artifactId>spring-data-jpa</artifactId>
+    <version>${version}-SNAPSHOT</version>
 </dependency>
 
 <repository>
-  <id>spring-snapshot</id>
-  <name>Spring Snapshot Repository</name>
-  <url>https://repo.spring.io/snapshot</url>
+    <id>spring-snapshot</id>
+    <name>Spring Snapshot Repository</name>
+    <url>https://repo.spring.io/snapshot</url>
 </repository>
-----
+```
 
-== Getting Help
+---
 
-Having trouble with Spring Data? We’d love to help!
+## Getting Help
 
-* Check the
-https://docs.spring.io/spring-data/jpa/reference/[reference documentation], and https://docs.spring.io/spring-data/jpa/docs/current/api/[Javadocs].
-* Learn the Spring basics – Spring Data builds on Spring Framework, check the https://spring.io[spring.io] web-site for a wealth of reference documentation.
-If you are just starting out with Spring, try one of the https://spring.io/guides[guides].
-* If you are upgrading, check out the https://github.com/spring-projects/spring-data-jpa/releases[Spring Data JPA release notes] and scroll down to the one you're considering. See the details there. (Also check out the https://github.com/spring-projects/spring-data-jpa/releases/latest[latest stable release])
-* Ask a question - we monitor https://stackoverflow.com[stackoverflow.com] for questions tagged with https://stackoverflow.com/tags/spring-data[`spring-data-jpa`].
-You can also chat with the community on https://gitter.im/spring-projects/spring-data[Gitter].
-* Report bugs with Spring Data JPA in the https://github.com/spring-projects/spring-data-jpa/issues[GitHub issue tracker].
+If you encounter issues or need guidance, check out the following resources:
 
-== Reporting Issues
+- [Reference Documentation](https://docs.spring.io/spring-data/jpa/reference/)
+- [API Documentation](https://docs.spring.io/spring-data/jpa/docs/current/api/)
+- [Spring Guides](https://spring.io/guides)
+- [StackOverflow](https://stackoverflow.com/questions/tagged/spring-data-jpa)
+- [Gitter Community Chat](https://gitter.im/spring-projects/spring-data)
+- [GitHub Issue Tracker](https://github.com/spring-projects/spring-data-jpa/issues)
 
-Spring Data uses GitHub as issue tracking system to record bugs and feature requests. If you want to raise an issue, please follow the recommendations below:
+---
 
-* Before you log a bug, please search the
-https://github.com/spring-projects/spring-data-jpa/issues[issue tracker] to see if someone has already reported the problem.
-* If the issue doesn’t exist already, https://github.com/spring-projects/spring-data-jpa/issues[create a new issue].
-* Please provide as much information as possible with the issue report, we like to know the version of Spring Data that you are using and JVM version, complete stack traces and any relevant configuration information.
-* If you need to paste code, or include a stack trace format it as code using triple backtick.
-* If possible try to create a test-case or project that replicates the issue. Attach a link to your code or a compressed file containing your code. Use an in-memory datatabase if possible or set the database up using https://github.com/testcontainers[Testcontainers].
+## Reporting Issues
 
-== Building from Source
+1. Search the [issue tracker](https://github.com/spring-projects/spring-data-jpa/issues) for existing reports.
+2. If none exist, [create a new issue](https://github.com/spring-projects/spring-data-jpa/issues) with detailed information:
+   - Spring Data JPA version
+   - JVM version
+   - Stack traces
+   - Relevant configuration
+   - Minimal reproducible example
 
-You don’t need to build from source to use Spring Data (binaries in https://repo.spring.io[repo.spring.io]), but if you want to try out the latest and greatest, Spring Data can be easily built with the https://github.com/takari/maven-wrapper[maven wrapper].
-You also need JDK 17 or above.
+---
 
-[source,bash]
-----
- $ ./mvnw clean install
-----
+## Building from Source
 
-If you want to build with the regular `mvn` command, you will need https://maven.apache.org/run-maven/index.html[Maven v3.8.0 or above].
+While pre-built binaries are available on [repo.spring.io](https://repo.spring.io), you can build from source if desired.
 
-_Also see link:CONTRIBUTING.adoc[CONTRIBUTING.adoc] if you wish to submit pull requests, and in particular please sign the https://cla.pivotal.io/sign/spring[Contributor’s Agreement] before your first non-trivial change._
+```bash
+$ ./mvnw clean install
+```
 
-=== Building reference documentation
+Requirements:
+- JDK 17 or above
+- [Maven 3.8.0+](https://maven.apache.org/)
 
-Building the documentation builds also the project without running tests.
+To build reference documentation:
 
-[source,bash]
-----
- $ ./mvnw clean install -Pantora
-----
+```bash
+$ ./mvnw clean install -Pantora
+```
 
-The generated documentation is available from `target/antora/site/index.html`.
+The documentation will be available at `target/antora/site/index.html`.
 
-== Guides
+---
 
-The https://spring.io/[spring.io] site contains several guides that show how to use Spring Data step-by-step:
+## Guides
 
-* https://spring.io/guides/gs/accessing-data-jpa/[Accessing Data with JPA]: Learn how to work with JPA data persistence using Spring Data JPA.
-* https://spring.io/guides/gs/accessing-data-rest/[Accessing JPA Data with REST] is a guide to creating a REST web service exposing data stored with JPA through repositories.
+Explore Spring Data guides:
 
-== Examples
+- [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+- [Accessing JPA Data with REST](https://spring.io/guides/gs/accessing-data-rest/)
 
-* https://github.com/spring-projects/spring-data-examples/[Spring Data Examples] contains example projects that explain specific features in more detail.
+---
 
-== License
+## Examples
 
-Spring Data JPA is Open Source software released under the https://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].
+Visit the [Spring Data Examples repository](https://github.com/spring-projects/spring-data-examples) for detailed examples of various features.
+
+---
+
+## License
+
+Spring Data JPA is open-source software released under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0.html).
+
+--- 
+
+This format ensures clarity and ease of navigation for users.
