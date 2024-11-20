@@ -1,0 +1,15 @@
+target/
+.idea/
+.settings/
+*.iml
+.project
+.classpath
+.springBeans
+.sonar4clipse
+*.sonar4clipseExternals
+.DS_Store
+node_modules
+package-lock.json
+node
+build/
+.mvn/.develocity
